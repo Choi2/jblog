@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="blog">
+
+	<select id="getAllCategoryList" resultType="categoryvo">
+		SELECT	no,
+				name,
+				post_count AS postCount,
+				content
+		FROM	category
+	</select>
+	
+	<select id="getPost" parameterType="long" resultType="postvo">
+		SELECT	no,
+				title,
+				content,
+				reg_date AS regDate
+		FROM	post
+		WHERE	no = #{no}
+	</select>
+	
+	<select id="getAllPostList" parameterType="long" resultType="postvo">
+		SELECT	no,
+				title,
+				content,
+				reg_date AS regDate
+		FROM	post
+		WHERE	blog_no = #{no}
+		ORDER   BY no DESC
+	</select>
+
+	<update id="updateBlogAdmin" parameterType="blogvo">
+		UPDATE blog
+	 	SET    title = #{title},
+	 		   image_name = #{imageName},
+	 		   image_path = #{imagePath}
+	 	WHERE  no = #{no}
+	</update>
+	
+	<select id="getBlogById" parameterType="string" resultType="blogvo">
+		SELECT 	b.no,
+				b.title,
+				b.image_path imagePath
+		FROM	blog b,
+				user u
+		WHERE	b.no = u.no
+		AND		u.id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="long">				  
+		INSERT	  
+		INTO blog 
+		VALUES(
+				#{userNo}, 
+				null, 
+				null,
+				null
+			  )
+	</insert>
+	
+	<insert id="insertPost" parameterType="postvo">				  
+		INSERT	  
+		INTO post 
+		VALUES(
+				null,
+				#{categoryNo}, 
+				#{title},
+				#{content},
+				now(),
+				#{blogNo}
+			  )
+	</insert>
+	
+	<insert id="insertCategory" parameterType="categoryvo">				  
+		INSERT	  
+		INTO category 
+		VALUES(
+				null, 
+				#{blogNo}, 
+				#{name},
+				0,
+				#{content}
+			  )
+		<selectKey resultType="long" keyProperty="no" order="AFTER">
+        	SELECT LAST_INSERT_ID()
+    	</selectKey>
+   		  
+	</insert>
+	
+	 	
+    <delete id="deleteCategory" parameterType="long">
+    	DELETE 
+    	FROM	category
+    	WHERE	no = #{no}	
+    </delete>
+	
+</mapper>
