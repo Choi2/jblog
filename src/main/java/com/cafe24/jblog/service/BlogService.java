@@ -31,8 +31,8 @@ public class BlogService {
 		return blogDao.getBlogById(id);
 	}
 
-	public List<CategoryVo> getCategoryList() {
-		return blogDao.getAllCategoryList();
+	public List<CategoryVo> getCategoryList(long blogNo) {
+		return blogDao.getAllCategoryList(blogNo);
 	}
 
 	public int insertCategory(CategoryVo vo) {
@@ -45,11 +45,12 @@ public class BlogService {
 	}
 	
 	public int insertPost(PostVo vo) {
+		blogDao.updateCategoryCount(vo.getCategoryNo());
 		return blogDao.insertPost(vo);
 	}
 
-	public List<PostVo> getPostList(long no) {
-		return blogDao.getAllPostList(no);
+	public List<PostVo> getPostList(long no, long cateNo) {
+		return blogDao.getAllPostList(no, cateNo);
 	}
 	
 	public PostVo getPost(long no) {

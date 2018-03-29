@@ -16,16 +16,18 @@
 			<div id="content">
 				<div class="blog-content">
 					<input type="hidden" name="no" value="${blog.no}"/>
-					<h4>${post.title}</h4>
-					<p>
-						${post.content}
-					<p>
+					<c:if test="${postList ne null}">
+						<h4>${postList[postNo].title}</h4>
+						<p>
+							${postList[postNo].content}
+						</p>
+					</c:if>
 				</div>
 				<ul class="blog-list">
 					<c:forEach items="${postList}" var="vo" varStatus="status">
 						<li>
-							<a href="${pageContext.request.contextPath}/${id}/${vo.no}">${vo.title}</a> 
-							<span>${vo.regDate}</span>	
+							<a href="${pageContext.request.contextPath}/${id}/${vo.categoryNo}/${vo.no}">${vo.title}</a>
+							<span><fmt:formatDate value="${vo.regDate}" pattern="yyyy-MM-dd"/></span>	
 						</li>
 					</c:forEach>
 				</ul>

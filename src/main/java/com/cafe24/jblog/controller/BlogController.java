@@ -2,6 +2,7 @@ package com.cafe24.jblog.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,47 +21,45 @@ import com.cafe24.jblog.vo.CategoryVo;
 import com.cafe24.jblog.vo.PostVo;
 
 @Controller
+@RequestMapping("/{id:(?!admin|assets).*}")
 public class BlogController {
 
 	@Autowired
 	private BlogService blogService;
-	
-	@RequestMapping("/{id}")
-	public String blogMain(@PathVariable String id, Model model) throws IOException {
+
+	@RequestMapping({"", "/{categoryNo}", "/{categoryNo}/{postNo}"})
+	public String postMain(
+			@PathVariable String id, 
+			@PathVariable Optional<Long> postNo,
+			@PathVariable Optional<Long> categoryNo,
+			Model model) throws IOException {
+		
+		long cateNo = 0;
+		
+		if(categoryNo.isPresent() == true) {
+			cateNo = categoryNo.get();
+		}
+		
 		BlogVo blog = blogService.getBlog(id);
-		List<PostVo> postList = blogService.getPostList(blog.getNo());
-		List<CategoryVo> categoryList = blogService.getCategoryList();
-		if(postList.size() > 0) {
-			PostVo post = postList.get(0);
-			model.addAttribute("post", post);
-		} else {
-			model.addAttribute("post", new PostVo());
+		
+		List<PostVo> postList = blogService.getPostList(blog.getNo(), cateNo);
+		List<CategoryVo> categoryList = blogService.getCategoryList(blog.getNo());
+		
+		long no = postList.size();
+		
+		if(postNo.isPresent() == true) {
+			no = postNo.get();
 		}
 		
 		model.addAttribute("blog", blog);
 		model.addAttribute("postList", postList);
-		model.addAttribute("categoryList", categoryList);
-		return "blog/blog-main";
-	}
-	
-	@RequestMapping("/{id}/{no}")
-	public String postMain(
-			@PathVariable String id, 
-			@PathVariable long no,
-			Model model) throws IOException {
-		BlogVo blog = blogService.getBlog(id);
-		PostVo post = blogService.getPost(no);
-		List<PostVo> postList = blogService.getPostList(blog.getNo());
-		List<CategoryVo> categoryList = blogService.getCategoryList();
-		model.addAttribute("blog", blog);
-		model.addAttribute("post", post);
-		model.addAttribute("postList", postList);
+		model.addAttribute("postNo", postList.size() - no);
 		model.addAttribute("categoryList", categoryList);
 		return "blog/blog-main";
 	}
 	
 
-	@RequestMapping(value="/{id}/admin/basic", method=RequestMethod.GET)
+	@RequestMapping(value="/admin/basic", method=RequestMethod.GET)
 	public String blogAdminBasic(
 			@PathVariable String id,
 			Model model) {
@@ -69,7 +68,7 @@ public class BlogController {
 		return "blog/blog-admin-basic";
 	}
 	
-	@RequestMapping(value="/{id}/admin/basic", method=RequestMethod.POST)
+	@RequestMapping(value="/admin/basic", method=RequestMethod.POST)
 	public String modifyBlogAdmin(
 			@PathVariable String id,
 			@ModelAttribute BlogVo vo,
@@ -79,25 +78,25 @@ public class BlogController {
 	}
 	
 	
-	@RequestMapping(value="/{id}/admin/category", method=RequestMethod.GET)
+	@RequestMapping(value="/admin/category", method=RequestMethod.GET)
 	public String blogAdminCategory(@PathVariable String id, Model model) {
-		List<CategoryVo> list = blogService.getCategoryList();
 		BlogVo blog = blogService.getBlog(id);
+		List<CategoryVo> list = blogService.getCategoryList(blog.getNo());
 		model.addAttribute("list", list);
 		model.addAttribute("blog", blog);
 		return "blog/blog-admin-category";
 	}
 	
-	@RequestMapping(value="/{id}/admin/write", method=RequestMethod.GET)
+	@RequestMapping(value="/admin/write", method=RequestMethod.GET)
 	public String blogAdminWrite(@PathVariable String id, Model model) {
-		List<CategoryVo> list = blogService.getCategoryList();
 		BlogVo blog = blogService.getBlog(id);
+		List<CategoryVo> list = blogService.getCategoryList(blog.getNo());
 		model.addAttribute("list", list);
 		model.addAttribute("blog", blog);
 		return "blog/blog-admin-write";
 	}
 	
-	@RequestMapping(value="/{id}/admin/write", method=RequestMethod.POST)
+	@RequestMapping(value="/admin/write", method=RequestMethod.POST)
 	public String modifyBlogAdmin(
 			@PathVariable String id,
 			@ModelAttribute PostVo vo) {
@@ -105,14 +104,14 @@ public class BlogController {
 		return "redirect:/" + id;
 	}
 	
-	@RequestMapping(value="/{id}/admin/category/insert", method=RequestMethod.POST)
+	@RequestMapping(value="/admin/category/insert", method=RequestMethod.POST)
 	@ResponseBody
 	public CategoryVo insertBlogAdminCategory(CategoryVo vo) {
 		blogService.insertCategory(vo);
 		return vo;
 	}
 	
-	@RequestMapping(value="/{id}/admin/category/delete", method=RequestMethod.POST)
+	@RequestMapping(value="/admin/category/delete", method=RequestMethod.POST)
 	@ResponseBody
 	public String deleteBlogAdminCategory(String no) {
 		blogService.deleteCategory(no);

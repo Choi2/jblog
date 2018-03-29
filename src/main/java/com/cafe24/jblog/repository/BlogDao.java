@@ -1,6 +1,8 @@
 package com.cafe24.jblog.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,8 @@ public class BlogDao {
 		return sqlSession.insert("blog.insert", userNo);
 	}
 
-	public List<CategoryVo> getAllCategoryList() {
-		return sqlSession.selectList("blog.getAllCategoryList");
+	public List<CategoryVo> getAllCategoryList(long blogNo) {
+		return sqlSession.selectList("blog.getAllCategoryList", blogNo);
 	}
 
 	public int insertCategory(CategoryVo vo) {
@@ -44,11 +46,19 @@ public class BlogDao {
 		return sqlSession.insert("blog.insertPost", vo);
 	}
 
-	public List<PostVo> getAllPostList(long no) {
-		return sqlSession.selectList("blog.getAllPostList", no);
+	public List<PostVo> getAllPostList(long no, long cateNo) {
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("blogNo", no);
+		parameters.put("categoryNo", cateNo);
+		return sqlSession.selectList("blog.getAllPostList", parameters);
 	}
 
 	public PostVo getPost(long no) {
 		return sqlSession.selectOne("blog.getPost", no);
 	}
+
+	public int updateCategoryCount(long categoryNo) {
+		return sqlSession.update("blog.updateCategoryCount", categoryNo);
+	}
+
 }

@@ -34,7 +34,7 @@
 			</bean>
 
 		</mvc:message-converters>
-		
+
 		<!-- argument resolver -->
 		<mvc:argument-resolvers>
 			<bean
@@ -47,7 +47,7 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/user/auth" />
-			<mvc:mapping path="/**/admin/**"/>
+			<mvc:mapping path="/**/admin/**" />
 			<bean class="com.cafe24.jblog.security.AuthLoginInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
@@ -69,10 +69,10 @@
 		</mvc:interceptor>
 	</mvc:interceptors>
 
-	
-	
+
+
 	<!-- resource mapping -->
-	<mvc:resources location="file:/jblog/" mapping="/admin/image/**"/>
+	<mvc:resources location="file:/jblog/" mapping="/admin/image/**" />
 
 
 
@@ -95,8 +95,22 @@
 		<property name="suffix" value=".jsp" />
 		<property name="order" value="1" />
 	</bean>
-	
-	
+
+	<!-- 6. MessageSource -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		 <property name="defaultEncoding">
+            <value>UTF-8</value>
+        </property>
+		
+		<property name="basenames">
+			<list>
+				<value>messages/message</value>
+			</list>
+		</property>
+	</bean>
+
+
 	<!-- 멀티파트 리졸버 -->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
