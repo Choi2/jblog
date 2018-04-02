@@ -30,8 +30,11 @@ public class BlogDao {
 		return sqlSession.insert("blog.insert", userNo);
 	}
 
-	public List<CategoryVo> getAllCategoryList(long blogNo) {
-		return sqlSession.selectList("blog.getAllCategoryList", blogNo);
+	public List<CategoryVo> getAllCategoryList(long blogNo, int startPageIndex) {
+		Map<String, Object> parameter = new HashMap<>();
+		parameter.put("blogNo", blogNo);
+		parameter.put("startPageIndex", startPageIndex);
+		return sqlSession.selectList("blog.getAllCategoryList", parameter);
 	}
 
 	public int insertCategory(CategoryVo vo) {
@@ -59,6 +62,10 @@ public class BlogDao {
 
 	public int updateCategoryCount(long categoryNo) {
 		return sqlSession.update("blog.updateCategoryCount", categoryNo);
+	}
+	
+	public int getCountCategory(long no) {
+		return sqlSession.selectOne("blog.getCountCategory", no);
 	}
 
 }

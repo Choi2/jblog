@@ -1,7 +1,9 @@
 package com.cafe24.jblog.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cafe24.jblog.service.BlogService;
 import com.cafe24.jblog.vo.BlogVo;
 import com.cafe24.jblog.vo.CategoryVo;
+import com.cafe24.jblog.vo.Pager;
 import com.cafe24.jblog.vo.PostVo;
 
 @Controller
@@ -43,7 +46,7 @@ public class BlogController {
 		BlogVo blog = blogService.getBlog(id);
 		
 		List<PostVo> postList = blogService.getPostList(blog.getNo(), cateNo);
-		List<CategoryVo> categoryList = blogService.getCategoryList(blog.getNo());
+		List<CategoryVo> categoryList = blogService.getCategoryList(blog.getNo(), null);
 		
 		long no = postList.size();
 		
@@ -79,9 +82,12 @@ public class BlogController {
 	
 	
 	@RequestMapping(value="/admin/category", method=RequestMethod.GET)
-	public String blogAdminCategory(@PathVariable String id, Model model) {
+	public String blogAdminCategory(
+			@PathVariable String id,
+			@ModelAttribute Pager pager,
+			Model model) {
 		BlogVo blog = blogService.getBlog(id);
-		List<CategoryVo> list = blogService.getCategoryList(blog.getNo());
+		List<CategoryVo> list = blogService.getCategoryList(blog.getNo(), pager);
 		model.addAttribute("list", list);
 		model.addAttribute("blog", blog);
 		return "blog/blog-admin-category";
@@ -90,7 +96,7 @@ public class BlogController {
 	@RequestMapping(value="/admin/write", method=RequestMethod.GET)
 	public String blogAdminWrite(@PathVariable String id, Model model) {
 		BlogVo blog = blogService.getBlog(id);
-		List<CategoryVo> list = blogService.getCategoryList(blog.getNo());
+		List<CategoryVo> list = blogService.getCategoryList(blog.getNo(), null);
 		model.addAttribute("list", list);
 		model.addAttribute("blog", blog);
 		return "blog/blog-admin-write";
@@ -106,9 +112,15 @@ public class BlogController {
 	
 	@RequestMapping(value="/admin/category/insert", method=RequestMethod.POST)
 	@ResponseBody
-	public CategoryVo insertBlogAdminCategory(CategoryVo vo) {
+	public Map<String, Object> insertBlogAdminCategory(
+			@ModelAttribute CategoryVo vo,
+			@ModelAttribute Pager pager) {
+		Map<String, Object> data = new HashMap<>();
+		pager.calculate(pager.getPage());
+		data.put("vo", vo);
+		data.put("pager", pager);
 		blogService.insertCategory(vo);
-		return vo;
+		return data;
 	}
 	
 	@RequestMapping(value="/admin/category/delete", method=RequestMethod.POST)

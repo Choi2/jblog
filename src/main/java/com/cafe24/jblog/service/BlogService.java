@@ -10,6 +10,7 @@ import com.cafe24.jblog.repository.BlogDao;
 import com.cafe24.jblog.util.FileUploadService;
 import com.cafe24.jblog.vo.BlogVo;
 import com.cafe24.jblog.vo.CategoryVo;
+import com.cafe24.jblog.vo.Pager;
 import com.cafe24.jblog.vo.PostVo;
 
 @Service
@@ -20,7 +21,6 @@ public class BlogService {
 
 	public void modifyBlogAdmin(BlogVo vo, MultipartFile multipartFile) {
 		String imagePath = new FileUploadService().restore(multipartFile);
-		System.out.println(imagePath);
 		String imageName = multipartFile.getOriginalFilename();
 		vo.setImageName(imageName);
 		vo.setImagePath(imagePath);
@@ -31,10 +31,20 @@ public class BlogService {
 		return blogDao.getBlogById(id);
 	}
 
-	public List<CategoryVo> getCategoryList(long blogNo) {
-		return blogDao.getAllCategoryList(blogNo);
+	public List<CategoryVo> getCategoryList(long blogNo, Pager pager) {
+		
+		int startPageIndex = -1;
+		
+		
+		if(pager != null) {
+			pager.setTotalCount(blogDao.getCountCategory(blogNo));
+			pager.calculate(pager.getPage());
+			startPageIndex = pager.getStartPageIndex();
+		}
+		System.out.println(pager);
+		return blogDao.getAllCategoryList(blogNo, startPageIndex);
 	}
-
+	
 	public int insertCategory(CategoryVo vo) {
 		return blogDao.insertCategory(vo);
 	}

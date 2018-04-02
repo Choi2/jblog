@@ -31,16 +31,17 @@ $(function(){
             success : function(data){
                 $('.admin-cat').append(
                 		'<tr>' +
-						'<td>' + data.no + '</td>' +
-						'<td>' + data.name + '</td>' +
+						'<td>' + data.vo.no + '</td>' +
+						'<td>' + data.vo.name + '</td>' +
 						'<td>0</td>' +
-						'<td>' + data.content + '</td>' +
+						'<td>' + data.vo.content + '</td>' +
 						'<td><img class="delete" src="${pageContext.request.contextPath}/assets/images/delete.jpg"></td>' +
 						'</tr>'
 				);
                 
                 $('input[name=name]').val('');
                 $('input[name=content]').val('');
+                
             }
              
         });
@@ -97,7 +98,36 @@ $(function(){
 						</tr>
 		      		</c:forEach>
 				</table>
-      	
+      			
+      			<div class="pager">
+					<ul>
+						<c:if test="${pager.leftArrow eq true}">
+							<li><a href="${pageContext.servletContext.contextPath}/${id}/admin/category?page=${pager.startPage - 1}">◀</a></li>
+						</c:if>
+						
+						<c:forEach begin="${pager.startPage}" end="${pager.endPage}" varStatus="status">
+							<li>
+								<c:if test="${param.page == status.index}">	
+									<a style="color:red;" href="${pageContext.servletContext.contextPath}/${id}/admin/category?page=${status.index}">${status.index}</a>
+								</c:if>
+									
+								<c:if test="${param.page != status.index}">
+									<a href="${pageContext.servletContext.contextPath}/${id}/admin/category?page=${status.index}">${status.index}</a>
+								</c:if>
+							</li>
+						</c:forEach>
+						
+						<c:forEach begin ="${pager.endPage + 1}" end = '5'  varStatus="status">
+							<li style="color:gray;">${status.index}</li>
+						</c:forEach>
+						
+						<c:if test="${pager.rightArrow eq true}">
+							<li><a href="${pageContext.servletContext.contextPath}/${id}/admin/category?page=${pager.endPage + 1}">▶</a></li>
+						</c:if>
+					</ul>
+				</div>
+      			
+      			
       			<h4 class="n-c">새로운 카테고리 추가</h4>
 		      	<table id="admin-cat-add">
 		      		<tr>
