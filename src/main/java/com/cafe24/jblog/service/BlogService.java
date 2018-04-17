@@ -49,8 +49,7 @@ public class BlogService {
 		return blogDao.insertCategory(vo);
 	}
 
-	public int deleteCategory(String no) {
-		long blogNo = Integer.parseInt(no);
+	public int deleteCategory(long blogNo) {
 		return blogDao.deleteCategory(blogNo);
 	}
 	

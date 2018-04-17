@@ -32,19 +32,21 @@ public class BlogController {
 
 	@RequestMapping({"", "/{categoryNo}", "/{categoryNo}/{postNo}"})
 	public String postMain(
-			@PathVariable String id, 
+			@PathVariable ("id") String id, 
 			@PathVariable Optional<Long> postNo,
 			@PathVariable Optional<Long> categoryNo,
+			/*@RequestParam (value="page", required=false, defaultValue="1") int page,*/
 			Model model) throws IOException {
 		
 		long cateNo = 0;
+		
 		
 		if(categoryNo.isPresent() == true) {
 			cateNo = categoryNo.get();
 		}
 		
 		BlogVo blog = blogService.getBlog(id);
-		
+
 		List<PostVo> postList = blogService.getPostList(blog.getNo(), cateNo);
 		List<CategoryVo> categoryList = blogService.getCategoryList(blog.getNo(), null);
 		
@@ -94,7 +96,9 @@ public class BlogController {
 	}
 	
 	@RequestMapping(value="/admin/write", method=RequestMethod.GET)
-	public String blogAdminWrite(@PathVariable String id, Model model) {
+	public String blogAdminWrite(
+			@PathVariable String id, 
+			Model model) {
 		BlogVo blog = blogService.getBlog(id);
 		List<CategoryVo> list = blogService.getCategoryList(blog.getNo(), null);
 		model.addAttribute("list", list);
@@ -121,14 +125,14 @@ public class BlogController {
 		data.put("pager", pager);
 		blogService.insertCategory(vo);
 		return data;
-	}
+	} //카테고리 추가(ajax)
 	
 	@RequestMapping(value="/admin/category/delete", method=RequestMethod.POST)
 	@ResponseBody
-	public String deleteBlogAdminCategory(String no) {
+	public String deleteBlogAdminCategory(@RequestParam long no) {
 		blogService.deleteCategory(no);
 		return "success";
-	}
+	} //카테고리 삭제(ajax)
 	
 	
 	

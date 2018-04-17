@@ -12,14 +12,23 @@
 <script>
 $(function(){
 	
-	
-	
+	$.urlParam = function(name){
+	    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	    if (results==null){
+	       return null;
+	    }
+	    else{
+	       return results[1] || 0;
+	    }
+	}
+
 	$('input[type=submit]').on('click', function(){
 		
 		var name = $('input[name=name]').val();
 		var content = $('input[name=content]').val();
 		var blogNo = $('input[name=blogNo]').val();
 		var allData = {"name" : name, "content" : content, "blogNo" : blogNo};
+		var size = $('#admin-cat').find('tr').length;
 		
 		$.ajax({
             type : "POST",
@@ -29,19 +38,19 @@ $(function(){
                 alert('통신실패!!');
             },
             success : function(data){
-                $('.admin-cat').append(
-                		'<tr>' +
-						'<td>' + data.vo.no + '</td>' +
-						'<td>' + data.vo.name + '</td>' +
-						'<td>0</td>' +
-						'<td>' + data.vo.content + '</td>' +
-						'<td><img class="delete" src="${pageContext.request.contextPath}/assets/images/delete.jpg"></td>' +
+            	$('#admin-cat').append(
+            			'<tr>' +
+							'<td><input type="hidden" name="no" value="'+ data.vo.no +'"/>' + size +'</td>' +
+							'<td>' + data.vo.name + '</td>' +
+							'<td> 0 </td>' +
+							'<td>' + data.vo.content + '</td>' +
+							'<td><img class="delete" src="${pageContext.request.contextPath}/assets/images/delete.jpg"></td>' +
 						'</tr>'
-				);
+				); 
                 
                 $('input[name=name]').val('');
                 $('input[name=content]').val('');
-                
+              /*   $('#admin-cat').load('${pageContext.servletContext.contextPath}/${id}/admin/category?page=${param.page} #admin-cat'); */
             }
              
         });
@@ -50,7 +59,7 @@ $(function(){
 	
 	$(document).on('click', '.delete', function(){
 		var target = $(this).parent().parent();
-		var no = $(this).parent().parent().children().first().text();
+		var no = $(this).parent().parent().children().first().find('input[name=no]').val();
 		var allData = {"no" : no};
 		$.ajax({
             type : "POST",
@@ -78,7 +87,7 @@ $(function(){
 					<c:param name="admin-menu" value="category"/>
 				</c:import>
 				<input type="hidden" name="blogNo" value="${blog.no}"/> 
-		      	<table class="admin-cat">
+		      	<table id="admin-cat" class="admin-cat">
 		      		<tr>
 		      			<th>번호</th>
 		      			<th>카테고리명</th>
@@ -88,7 +97,7 @@ $(function(){
 		      		</tr>
 		      		<c:forEach items="${list}" var="vo" varStatus="status">
 			      		<tr>
-							<td>${vo.no}</td>
+							<td><input type="hidden" name="no" value="${vo.no}"/>${vo.rowNum}</td>
 							<td>${vo.name}</td>
 							<td>${vo.postCount}</td>
 							<td>${vo.content}</td>
@@ -99,7 +108,7 @@ $(function(){
 		      		</c:forEach>
 				</table>
       			
-      			<div class="pager">
+      <%-- 			<div class="pager">
 					<ul>
 						<c:if test="${pager.leftArrow eq true}">
 							<li><a href="${pageContext.servletContext.contextPath}/${id}/admin/category?page=${pager.startPage - 1}">◀</a></li>
@@ -125,7 +134,7 @@ $(function(){
 							<li><a href="${pageContext.servletContext.contextPath}/${id}/admin/category?page=${pager.endPage + 1}">▶</a></li>
 						</c:if>
 					</ul>
-				</div>
+				</div> --%>
       			
       			
       			<h4 class="n-c">새로운 카테고리 추가</h4>

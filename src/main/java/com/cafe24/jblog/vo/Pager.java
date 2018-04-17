@@ -36,6 +36,11 @@ public class Pager {
 		startPage = ((page - 1) / PAGE_SIZE) * PAGE_SIZE + 1;
 		endPage = startPage + PAGE_SIZE - 1; 
 		startPageIndex = ((page - 1) * PAGE_SIZE);
+		
+		if(startPageIndex < 0) {
+			startPageIndex = 0;
+		}
+		
 		leftArrow = (startPage == 1) ? false : true;
 		rightArrow = (totalCount > (((page - 1) / PAGE_SIZE) + 1) * GROUP_SIZE) ? true : false;
 		

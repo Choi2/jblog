@@ -3,14 +3,18 @@
 <mapper namespace="blog">
 
 	<select id="getAllCategoryList" parameterType="map" resultType="categoryvo">
-		SELECT	no,
+		SELECT	no,	
+				@ROWNUM := @ROWNUM + 1 AS rowNum,
 				name,
 				post_count AS postCount,
 				content
-		FROM	category
+		FROM	category,
+				(SELECT @ROWNUM := 0) R
 		WHERE	blog_no = #{blogNo}
 		<if test="startPageIndex != -1">
-		LIMIT	#{startPageIndex}, 5
+<!-- 		ORDER	BY rowNum DESC -->
+<!-- 		LIMIT	#{startPageIndex}, 5 -->
+		
 		</if>
 	</select>
 	
@@ -35,6 +39,7 @@
 		WHERE	blog_no = #{blogNo}
 		AND		category_no = #{categoryNo}
 		ORDER   BY no DESC
+<!-- 		LIMIT	((#{page} - 1) * 5), 5  -->
 	</select>
 
 	<update id="updateBlogAdmin" parameterType="blogvo">

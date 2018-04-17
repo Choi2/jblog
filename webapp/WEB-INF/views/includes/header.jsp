@@ -10,7 +10,9 @@
 				</c:if>
 				<c:if test="${sessionScope.authUser ne null}">
 					<li>${sessionScope.authUser.name}님 환영합니다.</li>
-					<li><a href="${pageContext.request.contextPath}/user/logout">로그아웃</a></li>
+					<li><a href="${pageContext.request.contextPath}/user/logout">로그아웃</a></li>	
+				</c:if>
+				<c:if test="${sessionScope.authUser.id eq id}">
 					<li><a href="${pageContext.request.contextPath}/${sessionScope.authUser.id}/admin/basic">블로그 관리</a></li>
 				</c:if>
 			</ul>

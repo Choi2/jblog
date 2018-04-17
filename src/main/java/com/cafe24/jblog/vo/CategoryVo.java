@@ -6,7 +6,14 @@ public class CategoryVo {
 	private int postCount;
 	private String content;
 	private long blogNo;
+	private long rowNum;
 	
+	public long getRowNum() {
+		return rowNum;
+	}
+	public void setRowNum(long rowNum) {
+		this.rowNum = rowNum;
+	}
 	public long getNo() {
 		return no;
 	}
